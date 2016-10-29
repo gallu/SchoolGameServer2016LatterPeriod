@@ -3,15 +3,16 @@
 
 /*
  authentication
+ 「入力されたID/pass」と「DBのID/pass」の比較
  */
-// 「入力されたID/pass」と「DBのID/pass」の比較
-// -----------------
 // 「入力されたID/pass」の把握
 $email = $_POST['email'];
 $pass = $_POST['pass'];
 
 // 「DBのID/pass」の把握
+// ---------------------
 // DBに接続
+
 // 「準備されたSQL文」を用意
 $sql = 'SELECT * FROM users WHERE email = :email;';
 $pre = $dbh->prepare($sql);
@@ -21,14 +22,20 @@ $pre->bindValue(':email', $email);
 
 // SQL文を発行する
 $r = $pre->execute();
-
-// データを取得する
-
-// 「DBのパスワード」と「入力されたパスワード」を比較
-if (false === password_verify($pass, $hash)) {
-    // XXX パスワード不一致！！
+// データを取得
+$row = $pre->fetch(PDO::FETCH_ASSOC);
+if (true === empty($row)) {
+    // XXX emailがないぽい
+    exit;
 }
 
+// 「DBのパスワード」と「入力されたパスワード」を比較
+if (false === password_verify($pass, $row['password'])) {
+    // XXX パスワード不一致！！
+    exit;
+}
+
+// XXX ここまで来たらユーザ認証ができてる！！
 
 /*
  authorization開始
