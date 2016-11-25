@@ -1,0 +1,137 @@
+-- 「有料貨幣」を管理するテーブル
+CREATE TABLE coin (
+   user_id int unsigned not null,
+   coin_num int unsigned not null,
+   primary key(`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
+
+
+-- 「カード」を管理するテーブル
+CREATE TABLE card (
+   id int unsigned not null auto_increment,
+   user_id int unsigned not null,
+   card_id int unsigned not null,
+   primary key(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ;
+
+-- 事前準備
+insert into coin(user_id, coin_num) values(1, 0);
+
+--
+select * from coin;
+
+-- まず課金してお金を入れる
+update coin set coin_num=1000 where user_id=1;
+select * from coin;
+
+/*
+ -------------------------------------------------
+ */
+
+/*
+  課金してガチャをまわす一連の流れ
+*/
+-- 手持ちの金額を確認して
+select * from coin where user_id=1;
+-- お金を書き換えて
+update coin set coin_num=900 where user_id=1;
+-- カードを入手
+insert into card(user_id, card_id) values(1, 10);
+-- 確認
+select * from coin where user_id=1;
+select * from card where user_id=1;
+
+/*
+ -------------------------------------------------
+ */
+
+-- 「お金のupdate」でエラーが起きた場合
+
+/*
+ -------------------------------------------------
+ */
+
+-- 「カードのinsert」でエラーが起きた場合
+
+/*
+ -------------------------------------------------
+ */
+
+-- 「二つの端末で同時にがちゃを引いた」時の問題
+>> 端末A >>
+-- 手持ちの金額を確認して
+select * from coin where user_id=1;
+
+>> 端末B >>
+-- 手持ちの金額を確認して
+select * from coin where user_id=1;
+
+>> 端末A >>
+-- お金を書き換えて
+update coin set coin_num=700 where user_id=1;
+-- カードを入手
+insert into card(user_id, card_id) values(1, 10);
+-- 確認
+select * from coin where user_id=1;
+select * from card where user_id=1;
+-- トランザクション終了
+commit;
+
+>> 端末B >>
+-- お金を書き換えて
+update coin set coin_num=700 where user_id=1;
+-- カードを入手
+insert into card(user_id, card_id) values(1, 10);
+-- 確認
+select * from coin where user_id=1;
+select * from card where user_id=1;
+-- トランザクション終了
+commit;
+
+/*
+ トランザクションを使ってみる
+ -------------------------------------------------
+ */
+
+-- 「お金のupdate」でエラーが起きた場合
+-- 「カードのinsert」でエラーが起きた場合
+
+-- 「二つの端末で同時にがちゃを引いた」時の問題
+
+>> 端末A >>
+-- トランザクション開始
+begin;
+-- 手持ちの金額を確認して
+select * from coin where user_id=1 for update;
+
+>> 端末B >>
+-- トランザクション開始
+begin;
+-- 手持ちの金額を確認して
+select * from coin where user_id=1 for update;
+
+>> 端末A >>
+-- お金を書き換えて
+update coin set coin_num=600 where user_id=1;
+-- カードを入手
+insert into card(user_id, card_id) values(1, 10);
+-- 確認
+select * from coin where user_id=1;
+select * from card where user_id=1;
+-- トランザクション終了
+commit;
+
+>> 端末B >>
+-- お金を書き換えて
+update coin set coin_num=500 where user_id=1;
+-- カードを入手
+insert into card(user_id, card_id) values(1, 10);
+-- 確認
+select * from coin where user_id=1;
+select * from card where user_id=1;
+-- トランザクション終了
+commit;
+
+
+
+
