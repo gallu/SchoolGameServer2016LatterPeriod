@@ -165,4 +165,13 @@ commit;
 
 
 
+/*
+ 課金モノのSQLのパターン
+ */
+`begin;` でトランザクション開始
+SELECT `for update` で所持金確認
+UPDATEで所持金を減算
+INSERTまたはUPDATEでアイテム等を付与
+`commit;` でトランザクション終了
+(問題があったらrollback;で取り消し)
 
