@@ -74,8 +74,6 @@ insert into card(user_id, card_id) values(1, 10);
 -- 確認
 select * from coin where user_id=1;
 select * from card where user_id=1;
--- トランザクション終了
-commit;
 
 >> 端末B >>
 -- お金を書き換えて
@@ -85,19 +83,52 @@ insert into card(user_id, card_id) values(1, 10);
 -- 確認
 select * from coin where user_id=1;
 select * from card where user_id=1;
--- トランザクション終了
-commit;
 
 /*
  トランザクションを使ってみる
  -------------------------------------------------
  */
 
+-- (あんまり意味のない)base
+select * from card where user_id=1;
+begin;
+insert into card(user_id, card_id) values(1, 10);
+commit;
+
+select * from card where user_id=1;
+begin;
+insert into card(user_id, card_id) values(1, 10);
+rollback;
+
+
 -- 「お金のupdate」でエラーが起きた場合
+-- トランザクション開始
+begin;
+-- お金を書き換えて
+update coin set coin_num=700a where user_id=1;
+-- カードを入手
+insert into card(user_id, card_id) values(1, 10);
+-- トランザクション終了(破棄)
+rollback;
+-- 確認
+select * from coin where user_id=1;
+select * from card where user_id=1;
+
 -- 「カードのinsert」でエラーが起きた場合
+-- トランザクション開始
+begin;
+-- お金を書き換えて
+update coin set coin_num=700 where user_id=1;
+-- カードを入手
+insert into card(user_ida, card_id) values(1, 10);
+-- トランザクション終了(破棄)
+rollback;
+-- 確認
+select * from coin where user_id=1;
+select * from card where user_id=1;
+
 
 -- 「二つの端末で同時にがちゃを引いた」時の問題
-
 >> 端末A >>
 -- トランザクション開始
 begin;
