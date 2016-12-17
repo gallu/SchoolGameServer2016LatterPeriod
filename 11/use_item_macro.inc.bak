@@ -8,18 +8,18 @@
  * @param string $item_macro 使うアイテムのマクロ文字列
  */
 function use_item($pc, $item_macro) {
-    // マクロ文字列を「個々のエフェクト」に分解する
+    // マクロを「マクロ単体」に分解する
     $awk = explode(',', $item_macro);
-    // 「個々のエフェクト」ごとに処理する
-    foreach($awk as $mono) {
-        use_item_mono($pc, $mono);
+    foreach($awk as $m) {
+        // 「アイテムを使う(単体)」を呼ぶ
+        use_item_mono($pc, $m);
     }
 }
 
+// 実際にエフェクトを発生させる関数
 function use_item_mono($pc, $item_macro_mono) {
     // 「効果タイプ」と「効果値」を分解
     $awk = explode(':', $item_macro_mono);
-
     // 「効果タイプ」に合わせてエフェクト処理
     switch($awk[0]) {
         case 'HP回復':

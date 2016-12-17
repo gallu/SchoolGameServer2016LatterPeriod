@@ -21,9 +21,6 @@ var_dump($pc);
 use_item($pc, 'MP回復:100'); // MP 100点回復
 var_dump($pc);
 
-use_item($pc, 'HP回復:200,MP回復:200'); // HP&MP 100点回復
-var_dump($pc);
-
-use_item($pc, 'HP回復:-100,MP回復:400');
+use_item($pc, 'HP回復:200,MP回復:200'); // MP 100点回復
 var_dump($pc);
 
